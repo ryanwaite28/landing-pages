@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About — CivicFund</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    * { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-white text-gray-900">
+
+  <nav class="border-b border-gray-100">
+    <div class="max-w-5xl mx-auto px-6 flex items-center justify-between h-16">
+      <a href="index.html" class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-green-600 flex items-center justify-center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+            <polyline points="9 22 9 12 15 12 15 22"/>
+          </svg>
+        </div>
+        <span class="font-semibold text-gray-900 text-lg tracking-tight">CivicFund</span>
+      </a>
+      <a href="index.html" class="text-sm text-gray-500 hover:text-gray-900 transition-colors">← Back to home</a>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="bg-gradient-to-br from-green-50 to-cyan-50 py-20 px-6">
+    <div class="max-w-2xl mx-auto">
+      <h1 class="text-4xl font-bold text-gray-900 mb-4">About CivicFund</h1>
+      <p class="text-xl text-gray-500 leading-relaxed">
+        We believe every neighborhood has the resources to improve itself — it just needs a trusted way to pool them.
+      </p>
+    </div>
+  </section>
+
+  <main class="max-w-2xl mx-auto px-6 py-16 space-y-16">
+
+    <!-- Mission -->
+    <section>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Our mission</h2>
+      <p class="text-gray-500 leading-relaxed mb-4">
+        CivicFund exists to democratize community improvement. We give everyday people a trusted, transparent, and simple way to pool resources and pay for local change — without bureaucracy, grants, or government dependency.
+      </p>
+      <p class="text-gray-500 leading-relaxed">
+        The tools that large organizations use to fund and manage projects — escrow, contracts, payment verification — have never been accessible to ordinary communities. CivicFund changes that.
+      </p>
+    </section>
+
+    <!-- The problem -->
+    <section>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">The problem we're solving</h2>
+      <div class="grid sm:grid-cols-3 gap-4 mb-6">
+        <div class="bg-red-50 border border-red-100 rounded-xl p-5">
+          <p class="text-sm font-medium text-red-700 mb-2">For contributors</p>
+          <p class="text-sm text-red-800 leading-relaxed">Money raised for local projects disappears into PayPal links and Venmo requests with no accountability and no recourse if the project fails.</p>
+        </div>
+        <div class="bg-amber-50 border border-amber-100 rounded-xl p-5">
+          <p class="text-sm font-medium text-amber-700 mb-2">For organizers</p>
+          <p class="text-sm text-amber-800 leading-relaxed">Managing community projects means juggling spreadsheets, cash, Venmo, and group chats — with no real tools for transparency or accountability.</p>
+        </div>
+        <div class="bg-blue-50 border border-blue-100 rounded-xl p-5">
+          <p class="text-sm font-medium text-blue-700 mb-2">For workers</p>
+          <p class="text-sm text-blue-800 leading-relaxed">Local workers doing community jobs often don't get paid fairly — or at all — because there's no neutral party holding funds and enforcing completion.</p>
+        </div>
+      </div>
+      <p class="text-gray-500 leading-relaxed">
+        Existing platforms like GoFundMe and Kickstarter solve fundraising but not project delivery. They have no mechanism for hiring workers, verifying completion, or disbursing funds in a transparent and accountable way. CivicFund fills that gap.
+      </p>
+    </section>
+
+    <!-- How we're different -->
+    <section>
+      <h2 class="text-2xl font-bold text-gray-900 mb-6">How we're different</h2>
+      <div class="space-y-4">
+        <div class="flex items-start gap-4 p-5 border border-gray-100 rounded-xl">
+          <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0110 0v4"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900 text-sm mb-1">Escrow-protected by design</p>
+            <p class="text-sm text-gray-500">Funds are held by Stripe and released only when the community votes work is complete. Contributors can't be defrauded; workers can't be stiffed.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 border border-gray-100 rounded-xl">
+          <div class="w-9 h-9 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#0891b2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900 text-sm mb-1">Full financial transparency</p>
+            <p class="text-sm text-gray-500">Every project has a public disbursement ledger. Contributors see exactly how every dollar was spent — receipts, amounts, and dates — before any payout is approved.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 border border-gray-100 rounded-xl">
+          <div class="w-9 h-9 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#7c3aed" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900 text-sm mb-1">Community governs completion</p>
+            <p class="text-sm text-gray-500">Contributors who funded a project vote on whether work meets the agreed standard. No single person decides — the community does.</p>
+          </div>
+        </div>
+        <div class="flex items-start gap-4 p-5 border border-gray-100 rounded-xl">
+          <div class="w-9 h-9 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+            </svg>
+          </div>
+          <div>
+            <p class="font-medium text-gray-900 text-sm mb-1">Automatic refunds if goals aren't met</p>
+            <p class="text-sm text-gray-500">Pledges are authorized but not charged until a project hits its funding goal. Miss the goal or deadline? Every contributor is refunded automatically — no request needed.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Built by -->
+    <section>
+      <h2 class="text-2xl font-bold text-gray-900 mb-4">Built by</h2>
+      <div class="border border-gray-100 rounded-2xl p-6 flex items-start gap-5">
+        <div class="w-14 h-14 rounded-full bg-gradient-to-br from-green-400 to-cyan-500 flex items-center justify-center text-white font-bold text-lg flex-shrink-0">
+          CF
+        </div>
+        <div>
+          <p class="font-semibold text-gray-900 mb-1">[Founder name placeholder]</p>
+          <p class="text-sm text-gray-500 leading-relaxed mb-3">
+            [Founder bio placeholder — background, motivation for building CivicFund, connection to community improvement.]
+          </p>
+          <div class="flex items-center gap-4 text-sm">
+            <a href="mailto:hello@civicfund.us" class="text-green-600 hover:underline">hello@civicfund.us</a>
+            <a href="#" class="text-gray-400 hover:text-gray-600 transition-colors">LinkedIn ↗</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Status -->
+    <section class="bg-gray-50 rounded-2xl p-8">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="w-2 h-2 bg-green-500 rounded-full"></span>
+        <p class="text-sm font-medium text-green-700">Currently in development</p>
+      </div>
+      <h2 class="text-xl font-bold text-gray-900 mb-3">Where we are today</h2>
+      <p class="text-sm text-gray-500 leading-relaxed mb-5">
+        CivicFund is currently being built. We're targeting a beta launch in [target date placeholder]. Join the waitlist to be among the first to create or fund a project in your community.
+      </p>
+      <a href="index.html#waitlist" class="inline-flex items-center bg-green-600 hover:bg-green-700 text-white font-medium px-5 py-2.5 rounded-xl text-sm transition-colors">
+        Join the waitlist
+      </a>
+    </section>
+
+  </main>
+
+  <footer class="border-t border-gray-100 mt-4 py-8 px-6 text-center text-sm text-gray-400">
+    <p>© 2025 CivicFund · <a href="contact.html" class="hover:text-gray-600 transition-colors">Contact</a> · <a href="privacy.html" class="hover:text-gray-600 transition-colors">Privacy</a></p>
+  </footer>
+
+</body>
+</html>
