@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Duseum — Digital Museum Platform</title>
+  <meta name="description" content="A serverless, cloud-native digital museum where artists showcase their work and art lovers discover and support creators directly." />
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ─── Reset & Base ─────────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --ink:        #0e0d0b;
+      --ink-soft:   #1c1a16;
+      --parchment:  #f5f0e8;
+      --parchment-dim: #ede7d9;
+      --gold:       #c8973a;
+      --gold-light: #e8b55a;
+      --gold-dim:   #8a642a;
+      --stone:      #4a4540;
+      --stone-light:#7a7068;
+      --white:      #fdfaf4;
+
+      --font-display: 'Playfair Display', Georgia, serif;
+      --font-body:    'DM Sans', system-ui, sans-serif;
+      --font-mono:    'DM Mono', monospace;
+
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--ink);
+      color: var(--parchment);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ─── Keyframes ─────────────────────────────────────────────────────────── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(32px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50%       { transform: translateY(-8px); }
+    }
+    @keyframes rotateSlow {
+      from { transform: rotate(0deg); }
+      to   { transform: rotate(360deg); }
+    }
+
+    .animate-fade-up {
+      animation: fadeUp 0.9s var(--ease-out-expo) both;
+    }
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.22s; }
+    .delay-3 { animation-delay: 0.36s; }
+    .delay-4 { animation-delay: 0.52s; }
+    .delay-5 { animation-delay: 0.68s; }
+
+    /* ─── Scroll reveal ─────────────────────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.8s var(--ease-out-expo), transform 0.8s var(--ease-out-expo);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.22s; }
+    .reveal-delay-3 { transition-delay: 0.36s; }
+    .reveal-delay-4 { transition-delay: 0.5s; }
+
+    /* ─── Nav ───────────────────────────────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1.25rem 2.5rem;
+      background: rgba(14, 13, 11, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(200, 151, 58, 0.12);
+      transition: padding 0.3s ease;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      text-decoration: none;
+    }
+    .nav-logo-mark {
+      width: 32px; height: 32px;
+      border: 1.5px solid var(--gold);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 0.95rem;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: -0.02em;
+    }
+    .nav-wordmark {
+      font-family: var(--font-display);
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: var(--white);
+      letter-spacing: 0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: 0.85rem;
+      font-weight: 400;
+      color: var(--stone-light);
+      text-decoration: none;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--parchment); }
+
+    .nav-cta {
+      font-size: 0.8rem !important;
+      font-weight: 500 !important;
+      color: var(--gold) !important;
+      border: 1px solid rgba(200, 151, 58, 0.4);
+      padding: 0.45rem 1.1rem;
+      border-radius: 3px;
+      transition: background 0.2s, border-color 0.2s, color 0.2s !important;
+    }
+    .nav-cta:hover {
+      background: rgba(200, 151, 58, 0.1);
+      border-color: var(--gold);
+    }
+
+    /* ─── Hero ──────────────────────────────────────────────────────────────── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 8rem 2rem 6rem;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 70% 60% at 50% 40%, rgba(200, 151, 58, 0.06) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 50% at 20% 80%, rgba(200, 151, 58, 0.04) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 80% 20%, rgba(200, 151, 58, 0.03) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(200, 151, 58, 0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(200, 151, 58, 0.04) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+      -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+      mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%);
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.8rem;
+      animation: fadeUp 0.8s var(--ease-out-expo) both;
+      position: relative;
+      z-index: 1;
+    }
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: '';
+      display: block;
+      width: 28px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.6;
+    }
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(3.2rem, 8vw, 6.5rem);
+      font-weight: 400;
+      line-height: 1.08;
+      letter-spacing: -0.02em;
+      color: var(--white);
+      margin-bottom: 0.3rem;
+      animation: fadeUp 0.9s var(--ease-out-expo) 0.1s both;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title-italic {
+      font-style: italic;
+      color: var(--gold-light);
+    }
+
+    .hero-subtitle-line {
+      display: block;
+      font-family: var(--font-display);
+      font-size: clamp(1.2rem, 3vw, 2rem);
+      font-weight: 400;
+      font-style: italic;
+      color: var(--stone-light);
+      margin-bottom: 2.5rem;
+      animation: fadeUp 0.9s var(--ease-out-expo) 0.22s both;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-description {
+      max-width: 540px;
+      font-size: 1.05rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--stone-light);
+      margin-bottom: 3rem;
+      animation: fadeUp 0.9s var(--ease-out-expo) 0.36s both;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeUp 0.9s var(--ease-out-expo) 0.5s both;
+      position: relative;
+      z-index: 1;
+    }
+
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: var(--gold);
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      border: none;
+      border-radius: 3px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .btn-primary:hover {
+      background: var(--gold-light);
+      transform: translateY(-1px);
+    }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: transparent;
+      color: var(--parchment-dim);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 400;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      padding: 0.9rem 2rem;
+      border: 1px solid rgba(200, 151, 58, 0.25);
+      border-radius: 3px;
+      text-decoration: none;
+      cursor: pointer;
+      transition: border-color 0.2s, color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover {
+      border-color: rgba(200, 151, 58, 0.6);
+      color: var(--white);
+      transform: translateY(-1px);
+    }
+
+    .hero-scroll-hint {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.4rem;
+      animation: fadeIn 1s 1.2s both;
+      z-index: 1;
+    }
+    .hero-scroll-hint span {
+      font-size: 0.65rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--stone-light);
+    }
+    .scroll-line {
+      width: 1px;
+      height: 40px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      animation: float 2.5s ease-in-out infinite;
+    }
+
+    /* ─── Section common ────────────────────────────────────────────────────── */
+    section {
+      padding: 7rem 2rem;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+
+    .section-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: var(--font-display);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--white);
+      margin-bottom: 1.2rem;
+    }
+
+    .section-body {
+      font-size: 1rem;
+      font-weight: 300;
+      line-height: 1.8;
+      color: var(--stone-light);
+      max-width: 560px;
+    }
+
+    .divider {
+      width: 48px;
+      height: 1px;
+      background: var(--gold);
+      opacity: 0.5;
+      margin: 1.5rem 0;
+    }
+
+    /* ─── About ─────────────────────────────────────────────────────────────── */
+    .about {
+      background: var(--ink-soft);
+      border-top: 1px solid rgba(200, 151, 58, 0.1);
+      border-bottom: 1px solid rgba(200, 151, 58, 0.1);
+    }
+
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+
+    .about-visual {
+      position: relative;
+    }
+
+    .about-frame {
+      position: relative;
+      aspect-ratio: 4/5;
+      background: rgba(200, 151, 58, 0.04);
+      border: 1px solid rgba(200, 151, 58, 0.15);
+      border-radius: 2px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .about-frame::before {
+      content: '';
+      position: absolute;
+      inset: 20px;
+      border: 1px solid rgba(200, 151, 58, 0.1);
+      border-radius: 1px;
+    }
+
+    .frame-ornament {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.2rem;
+      opacity: 0.4;
+    }
+    .frame-ornament-ring {
+      width: 72px; height: 72px;
+      border: 1.5px solid var(--gold);
+      border-radius: 50%;
+      position: relative;
+      animation: rotateSlow 20s linear infinite;
+    }
+    .frame-ornament-ring::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border: 1px dashed rgba(200, 151, 58, 0.4);
+      border-radius: 50%;
+    }
+    .frame-ornament-text {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: 0.85rem;
+      color: var(--gold);
+      letter-spacing: 0.06em;
+    }
+
+    .about-corner {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-color: var(--gold);
+      border-style: solid;
+      opacity: 0.4;
+    }
+    .about-corner-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .about-corner-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+    .about-corner-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+    .about-corner-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+    /* ─── Features ──────────────────────────────────────────────────────────── */
+    .features { background: var(--ink); }
+
+    .features-header {
+      text-align: center;
+      margin-bottom: 5rem;
+    }
+    .features-header .section-body {
+      margin: 0 auto;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5px;
+      background: rgba(200, 151, 58, 0.1);
+      border: 1px solid rgba(200, 151, 58, 0.1);
+    }
+
+    .feature-card {
+      background: var(--ink);
+      padding: 2.5rem 2rem;
+      transition: background 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s var(--ease-out-expo);
+    }
+    .feature-card:hover { background: rgba(200, 151, 58, 0.03); }
+    .feature-card:hover::before { transform: scaleX(1); }
+
+    .feature-number {
+      font-family: var(--font-display);
+      font-size: 2.5rem;
+      font-weight: 400;
+      color: rgba(200, 151, 58, 0.15);
+      line-height: 1;
+      margin-bottom: 1.2rem;
+      transition: color 0.3s;
+    }
+    .feature-card:hover .feature-number { color: rgba(200, 151, 58, 0.3); }
+
+    .feature-title {
+      font-family: var(--font-display);
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 0.7rem;
+      line-height: 1.3;
+    }
+
+    .feature-text {
+      font-size: 0.88rem;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--stone-light);
+    }
+
+    /* ─── Tiers ─────────────────────────────────────────────────────────────── */
+    .tiers {
+      background: var(--ink-soft);
+      border-top: 1px solid rgba(200, 151, 58, 0.1);
+    }
+
+    .tiers-layout {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 5rem;
+      align-items: start;
+    }
+
+    .tier-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: rgba(200, 151, 58, 0.1);
+    }
+
+    .tier-card {
+      background: var(--ink);
+      padding: 2rem 1.75rem;
+      position: relative;
+    }
+
+    .tier-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(200, 151, 58, 0.12);
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+    .tier-badge.free { color: var(--stone-light); background: rgba(120, 112, 104, 0.15); }
+
+    .tier-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: var(--white);
+      margin-bottom: 0.5rem;
+    }
+
+    .tier-desc {
+      font-size: 0.85rem;
+      font-weight: 300;
+      line-height: 1.65;
+      color: var(--stone-light);
+    }
+
+    .tier-items {
+      list-style: none;
+      margin-top: 1.2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .tier-items li {
+      font-size: 0.82rem;
+      color: var(--stone-light);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      font-weight: 300;
+    }
+    .tier-items li::before {
+      content: '—';
+      color: var(--gold);
+      opacity: 0.6;
+      flex-shrink: 0;
+      margin-top: 0.05em;
+    }
+
+    /* ─── Tech Stack ────────────────────────────────────────────────────────── */
+    .tech { background: var(--ink); }
+
+    .tech-header {
+      margin-bottom: 4rem;
+    }
+
+    .tech-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 3rem;
+    }
+
+    .tech-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      color: var(--stone-light);
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(200, 151, 58, 0.12);
+      padding: 0.4rem 0.9rem;
+      border-radius: 2px;
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+      cursor: default;
+    }
+    .tech-pill:hover {
+      background: rgba(200, 151, 58, 0.06);
+      border-color: rgba(200, 151, 58, 0.3);
+      color: var(--parchment);
+    }
+    .tech-pill-dot {
+      width: 5px; height: 5px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0.5;
+      flex-shrink: 0;
+    }
+    .tech-pill.highlight {
+      border-color: rgba(200, 151, 58, 0.3);
+      color: var(--parchment-dim);
+    }
+
+    .tech-architecture {
+      margin-top: 3rem;
+      padding: 2.5rem;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(200, 151, 58, 0.1);
+      border-radius: 2px;
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+      line-height: 1.9;
+      color: var(--stone-light);
+      overflow-x: auto;
+    }
+    .arch-comment { color: rgba(200, 151, 58, 0.4); }
+    .arch-key { color: var(--gold-light); }
+    .arch-value { color: var(--parchment-dim); }
+    .arch-arrow { color: rgba(200, 151, 58, 0.5); }
+
+    /* ─── Architecture Layers ───────────────────────────────────────────────── */
+    .arch-section {
+      background: var(--ink-soft);
+      border-top: 1px solid rgba(200, 151, 58, 0.1);
+      border-bottom: 1px solid rgba(200, 151, 58, 0.1);
+    }
+
+    .arch-diagram {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(200, 151, 58, 0.08);
+      border: 1px solid rgba(200, 151, 58, 0.1);
+      margin-top: 3.5rem;
+    }
+
+    .arch-layer {
+      background: var(--ink-soft);
+      padding: 1.75rem 1.5rem;
+    }
+
+    .arch-layer-label {
+      font-size: 0.62rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+      margin-bottom: 1rem;
+      font-weight: 500;
+    }
+
+    .arch-layer-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .arch-item {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(200, 151, 58, 0.1);
+      border-radius: 2px;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.78rem;
+      font-family: var(--font-mono);
+      color: var(--stone-light);
+      transition: background 0.2s, border-color 0.2s, color 0.2s;
+    }
+    .arch-item:hover {
+      background: rgba(200, 151, 58, 0.06);
+      border-color: rgba(200, 151, 58, 0.25);
+      color: var(--parchment);
+    }
+    .arch-item.accent {
+      border-color: rgba(200, 151, 58, 0.25);
+      color: var(--parchment-dim);
+    }
+
+    /* ─── Portfolio Banner ──────────────────────────────────────────────────── */
+    .portfolio-banner {
+      background: var(--ink);
+      padding: 6rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .portfolio-banner::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(200, 151, 58, 0.05), transparent);
+      pointer-events: none;
+    }
+
+    .banner-quote {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-size: clamp(1.4rem, 3vw, 2.2rem);
+      font-weight: 400;
+      color: var(--white);
+      max-width: 700px;
+      margin: 0 auto 2rem;
+      line-height: 1.5;
+      position: relative;
+    }
+    .banner-quote::before {
+      content: '\201C';
+      font-size: 5rem;
+      color: rgba(200, 151, 58, 0.15);
+      position: absolute;
+      top: -1.5rem;
+      left: -2rem;
+      line-height: 1;
+      font-style: normal;
+    }
+
+    .banner-attr {
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--stone-light);
+      position: relative;
+    }
+
+    /* ─── CTA ───────────────────────────────────────────────────────────────── */
+    .cta-section {
+      background: var(--ink-soft);
+      border-top: 1px solid rgba(200, 151, 58, 0.1);
+      padding: 8rem 2rem;
+      text-align: center;
+    }
+
+    .cta-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-weight: 400;
+      line-height: 1.15;
+      color: var(--white);
+      margin-bottom: 1.5rem;
+    }
+
+    .cta-subtitle {
+      font-size: 1rem;
+      font-weight: 300;
+      color: var(--stone-light);
+      max-width: 480px;
+      margin: 0 auto 3rem;
+      line-height: 1.8;
+    }
+
+    .cta-actions {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ─── Footer ────────────────────────────────────────────────────────────── */
+    footer {
+      background: var(--ink);
+      border-top: 1px solid rgba(200, 151, 58, 0.1);
+      padding: 3rem 2.5rem 2rem;
+    }
+
+    .footer-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 3rem;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand .nav-wordmark {
+      display: block;
+      margin-bottom: 0.5rem;
+    }
+
+    .footer-tagline {
+      font-size: 0.82rem;
+      color: var(--stone-light);
+      font-weight: 300;
+      max-width: 220px;
+      line-height: 1.6;
+    }
+
+    .footer-links-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .footer-links-label {
+      font-size: 0.68rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+      margin-bottom: 0.25rem;
+    }
+    .footer-links-group a {
+      font-size: 0.85rem;
+      font-weight: 300;
+      color: var(--stone-light);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links-group a:hover { color: var(--parchment); }
+
+    .footer-bottom {
+      max-width: 1100px;
+      margin: 2.5rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(200, 151, 58, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-bottom span {
+      font-size: 0.78rem;
+      color: var(--stone-light);
+      font-weight: 300;
+      opacity: 0.7;
+    }
+    .footer-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .status-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: #5a9e6e;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    /* ─── Responsive ────────────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      .about-grid { grid-template-columns: 1fr; gap: 3rem; }
+      .about-visual { display: none; }
+      .features-grid { grid-template-columns: 1fr 1fr; }
+      .tiers-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .arch-diagram { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      section { padding: 5rem 1.25rem; }
+      .nav-links { display: none; }
+      .features-grid { grid-template-columns: 1fr; }
+      .tier-cards { grid-template-columns: 1fr; }
+      .arch-diagram { grid-template-columns: 1fr; }
+      .footer-inner { flex-direction: column; gap: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ─────────────────────────────────────────────────────────── -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-mark">D</div>
+      <span class="nav-wordmark">Duseum</span>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#features">Features</a></li>
+      <li><a href="#tiers">Tiers</a></li>
+      <li><a href="#tech">Stack</a></li>
+      <li><a href="https://github.com/ryanwaite28/ai-projects-duseum" target="_blank" rel="noopener" class="nav-cta">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <!-- ── Hero ───────────────────────────────────────────────────────────────── -->
+  <section class="hero" id="top">
+    <div class="hero-eyebrow animate-fade-up">
+      <span></span>Digital Museum Platform<span></span>
+    </div>
+
+    <h1 class="hero-title animate-fade-up delay-1">
+      Art deserves<br />
+      <span class="hero-title-italic">a real stage.</span>
+    </h1>
+
+    <span class="hero-subtitle-line animate-fade-up delay-2">A serverless museum built on AWS</span>
+
+    <p class="hero-description animate-fade-up delay-3">
+      Duseum is a cloud-native platform where artists publish and monetize
+      their work — and where viewers discover, follow, and support creators
+      directly. Curated like a museum. Built like a startup.
+    </p>
+
+    <div class="hero-actions animate-fade-up delay-4">
+      <a href="https://github.com/ryanwaite28/ai-projects-duseum" target="_blank" rel="noopener" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+        </svg>
+        View on GitHub
+      </a>
+      <a href="#about" class="btn-secondary">
+        Explore the Platform
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M7 17l9.2-9.2M17 17V7H7"/>
+        </svg>
+      </a>
+    </div>
+
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <!-- ── About ──────────────────────────────────────────────────────────────── -->
+  <section class="about" id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div>
+          <p class="section-label reveal">What is Duseum</p>
+          <h2 class="section-title reveal reveal-delay-1">
+            A museum metaphor<br />
+            <em style="font-style:italic; color: var(--gold-light);">with real mechanics.</em>
+          </h2>
+          <div class="divider reveal reveal-delay-2"></div>
+          <p class="section-body reveal reveal-delay-2">
+            Duseum operates on a <strong style="color:var(--parchment-dim); font-weight:500;">dual-profile model</strong> — every account holds a Viewer profile for discovery and an optional Author profile for publishing. Access is layered: free browsing, platform-wide subscriptions, and direct per-author subscriptions that unlock private collections.
+          </p>
+          <p class="section-body reveal reveal-delay-3" style="margin-top:1.2rem;">
+            A single account can be both creator and collector simultaneously. Authors earn through subscriber revenue and platform feature placements. Viewers get a curated, museum-quality discovery experience.
+          </p>
+          <div style="margin-top:2rem;" class="reveal reveal-delay-4">
+            <a href="#features" class="btn-secondary" style="display:inline-flex;">
+              See all features
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:0.4rem;" aria-hidden="true">
+                <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        <div class="about-visual" aria-hidden="true">
+          <div class="about-frame">
+            <div class="about-corner about-corner-tl"></div>
+            <div class="about-corner about-corner-tr"></div>
+            <div class="about-corner about-corner-bl"></div>
+            <div class="about-corner about-corner-br"></div>
+            <div class="frame-ornament">
+              <div class="frame-ornament-ring"></div>
+              <span class="frame-ornament-text">Duseum</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ───────────────────────────────────────────────────────────── -->
+  <section class="features" id="features">
+    <div class="container">
+      <div class="features-header">
+        <p class="section-label reveal">Platform Features</p>
+        <h2 class="section-title reveal reveal-delay-1">
+          Everything a real<br />art platform needs.
+        </h2>
+        <p class="section-body reveal reveal-delay-2">
+          Built with production-grade depth across discovery, monetization, social engagement, and creator tools.
+        </p>
+      </div>
+
+      <div class="features-grid">
+        <div class="feature-card reveal">
+          <div class="feature-number">01</div>
+          <h3 class="feature-title">Layered Access Tiers</h3>
+          <p class="feature-text">Free browsing, platform subscriptions for unlimited public art, and per-author subscriptions for private collections. Access enforced server-side on every request.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-number">02</div>
+          <h3 class="feature-title">Daily &amp; Weekly Featured Authors</h3>
+          <p class="feature-text">A random author spotlighted every day at no cost. Authors book paid weekly feature slots (up to 10 per week, first-come first-served, one booking per 3-month window).</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-number">03</div>
+          <h3 class="feature-title">Follow &amp; Email Notifications</h3>
+          <p class="feature-text">Viewers follow authors and receive SES email notifications on new uploads. Preferences are per-author and globally configurable, with CAN-SPAM compliant one-click unsubscribe.</p>
+        </div>
+
+        <div class="feature-card reveal">
+          <div class="feature-number">04</div>
+          <h3 class="feature-title">Private Collections</h3>
+          <p class="feature-text">Authors designate a private section accessible only to paying subscribers. Private pieces served via CloudFront signed URLs with 1-hour TTL — never directly exposed.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-number">05</div>
+          <h3 class="feature-title">Stripe-Powered Monetization</h3>
+          <p class="feature-text">Platform and author subscriptions via Stripe Billing. Weekly feature fees via Stripe Payment Intents. Webhook processing is idempotent via a DynamoDB deduplication table.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-number">06</div>
+          <h3 class="feature-title">Collections &amp; Tags</h3>
+          <p class="feature-text">Authors curate named collections mixing public and private pieces. Viewers see only pieces their tier grants access to, with an honest "N pieces visible to you" count.</p>
+        </div>
+
+        <div class="feature-card reveal">
+          <div class="feature-number">07</div>
+          <h3 class="feature-title">Social Interactions</h3>
+          <p class="feature-text">Reactions (LOVE, WOW, FIRE, INSPIRED), threaded comments, pinned comments, and author replies. Authors control comment availability per piece.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-1">
+          <div class="feature-number">08</div>
+          <h3 class="feature-title">Author Analytics</h3>
+          <p class="feature-text">Dashboard surfaces view counts, follower and subscriber counts, MRR, notification delivery summaries, and upcoming feature booking history.</p>
+        </div>
+
+        <div class="feature-card reveal reveal-delay-2">
+          <div class="feature-number">09</div>
+          <h3 class="feature-title">Admin Controls</h3>
+          <p class="feature-text">Full admin panel for moderation, daily feature overrides, booking cancellations with Stripe refunds, and live platform config updates — no deploys needed.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Access Tiers ───────────────────────────────────────────────────────── -->
+  <section class="tiers" id="tiers">
+    <div class="container">
+      <div class="tiers-layout">
+        <div>
+          <p class="section-label reveal">Access Model</p>
+          <h2 class="section-title reveal reveal-delay-1">
+            Four ways<br />to experience<br />
+            <em style="font-style:italic; color:var(--gold-light);">Duseum.</em>
+          </h2>
+          <div class="divider reveal reveal-delay-2"></div>
+          <p class="section-body reveal reveal-delay-2">
+            A tiered model that balances open discovery with sustainable creator monetization. Every user starts as a free Viewer — upgrading is always optional, never coercive.
+          </p>
+        </div>
+
+        <div class="reveal reveal-delay-1">
+          <div class="tier-cards">
+            <div class="tier-card">
+              <div class="tier-badge free">Viewer — Free</div>
+              <div class="tier-name">Explorer</div>
+              <p class="tier-desc">Browse the curated public gallery — no account required for the free tier.</p>
+              <ul class="tier-items">
+                <li>Up to 10 public pieces per author</li>
+                <li>Daily &amp; Weekly Featured Authors</li>
+                <li>Trending &amp; browse pages</li>
+              </ul>
+            </div>
+
+            <div class="tier-card">
+              <div class="tier-badge">Platform Subscriber</div>
+              <div class="tier-name">Collector</div>
+              <p class="tier-desc">Unlimited access to all public work on the platform.</p>
+              <ul class="tier-items">
+                <li>Unlimited public art from all authors</li>
+                <li>Full collections &amp; gallery view</li>
+                <li>Author directory &amp; search</li>
+              </ul>
+            </div>
+
+            <div class="tier-card">
+              <div class="tier-badge">Author Subscriber</div>
+              <div class="tier-name">Patron</div>
+              <p class="tier-desc">Support a specific author and unlock their private section.</p>
+              <ul class="tier-items">
+                <li>Full private collection access</li>
+                <li>Private piece email notifications</li>
+                <li>Monthly fee set by the author</li>
+              </ul>
+            </div>
+
+            <div class="tier-card">
+              <div class="tier-badge">Author</div>
+              <div class="tier-name">Creator</div>
+              <p class="tier-desc">Publish, monetize, and build a following on your terms.</p>
+              <ul class="tier-items">
+                <li>Public &amp; private piece publishing</li>
+                <li>Subscriber revenue + platform share</li>
+                <li>Weekly feature slot bookings</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Tech Stack ─────────────────────────────────────────────────────────── -->
+  <section class="tech" id="tech">
+    <div class="container">
+      <div class="tech-header">
+        <p class="section-label reveal">Technology</p>
+        <h2 class="section-title reveal reveal-delay-1">
+          Fully serverless.<br />
+          <em style="font-style:italic; color:var(--gold-light);">Zero idle compute.</em>
+        </h2>
+        <div class="divider reveal reveal-delay-2"></div>
+        <p class="section-body reveal reveal-delay-2">
+          Every Lambda scales independently. DynamoDB on-demand billing. CloudFront for media. Infrastructure as code with AWS CDK TypeScript. Built to cost nearly nothing at zero traffic — scales linearly with growth.
+        </p>
+      </div>
+
+      <div class="tech-pills reveal">
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>AWS Lambda</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>API Gateway HTTP API</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>DynamoDB (single-table)</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>Amazon Cognito</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>CloudFront + S3</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>AWS SES</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>SQS + DLQ</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>EventBridge</span>
+        <span class="tech-pill highlight"><span class="tech-pill-dot"></span>AWS CDK (TypeScript)</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>React 18 + Vite</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>TypeScript 5</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>Middy (middleware)</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>Stripe Billing</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>Stripe Connect</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>Tailwind CSS</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>Zustand</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>React Query</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>esbuild</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>Turborepo</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>GitHub Actions + OIDC</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>MiniStack (local dev)</span>
+        <span class="tech-pill"><span class="tech-pill-dot"></span>Vitest + Playwright</span>
+      </div>
+
+      <div class="tech-architecture reveal">
+        <div><span class="arch-comment">// Lambda inventory — one domain per function, scales independently</span></div>
+        <div><span class="arch-key">artworks-lambda</span>     <span class="arch-arrow"> → </span><span class="arch-value">CRUD, access tier enforcement, SQS publish on publish</span></div>
+        <div><span class="arch-key">users-lambda</span>        <span class="arch-arrow"> → </span><span class="arch-value">profiles, follow/unfollow, notification preferences</span></div>
+        <div><span class="arch-key">subscriptions-lambda</span><span class="arch-arrow"> → </span><span class="arch-value">Stripe Checkout session creation, billing portal</span></div>
+        <div><span class="arch-key">sub-webhook-lambda</span>  <span class="arch-arrow"> → </span><span class="arch-value">SQS trigger — Stripe events, idempotent via DynamoDB</span></div>
+        <div><span class="arch-key">notifications-lambda</span><span class="arch-arrow"> → </span><span class="arch-value">SQS trigger — SES fan-out, preference enforcement</span></div>
+        <div><span class="arch-key">features-lambda</span>     <span class="arch-arrow"> → </span><span class="arch-value">daily spotlight, weekly bookings, availability calendar</span></div>
+        <div><span class="arch-key">maintenance-lambda</span>  <span class="arch-arrow"> → </span><span class="arch-value">EventBridge daily + Monday — rotation, cleanup jobs</span></div>
+        <div><span class="arch-key">media-lambda</span>        <span class="arch-arrow"> → </span><span class="arch-value">S3 presigned URLs, upload intent lifecycle</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Architecture Layers ────────────────────────────────────────────────── -->
+  <section class="arch-section">
+    <div class="container">
+      <p class="section-label reveal">Architecture</p>
+      <h2 class="section-title reveal reveal-delay-1" style="max-width:500px;">
+        Serverless from<br />top to bottom.
+      </h2>
+
+      <div class="arch-diagram reveal reveal-delay-2">
+        <div class="arch-layer">
+          <div class="arch-layer-label">Frontend</div>
+          <div class="arch-layer-items">
+            <div class="arch-item accent">React 18 + Vite</div>
+            <div class="arch-item">Tailwind + Zustand</div>
+            <div class="arch-item">React Query</div>
+            <div class="arch-item">AWS Amplify (auth)</div>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-label">Edge &amp; Gateway</div>
+          <div class="arch-layer-items">
+            <div class="arch-item accent">CloudFront + WAF</div>
+            <div class="arch-item">API Gateway HTTP</div>
+            <div class="arch-item">Cognito Authorizer</div>
+            <div class="arch-item">Signed URLs (CFront)</div>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-label">Compute</div>
+          <div class="arch-layer-items">
+            <div class="arch-item accent">Lambda (10 functions)</div>
+            <div class="arch-item">Middy middleware</div>
+            <div class="arch-item">SQS → Lambda triggers</div>
+            <div class="arch-item">EventBridge schedules</div>
+          </div>
+        </div>
+        <div class="arch-layer">
+          <div class="arch-layer-label">Data &amp; Services</div>
+          <div class="arch-layer-items">
+            <div class="arch-item accent">DynamoDB on-demand</div>
+            <div class="arch-item">S3 media + SPA</div>
+            <div class="arch-item">SES email delivery</div>
+            <div class="arch-item">Secrets Manager</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Mission Quote ──────────────────────────────────────────────────────── -->
+  <section class="portfolio-banner">
+    <blockquote class="banner-quote reveal">
+      To give artists a beautiful, museum-quality space to share their work — and give art lovers a curated, meaningful way to discover and support creators directly.
+    </blockquote>
+    <p class="banner-attr reveal reveal-delay-1">Duseum — Mission Statement</p>
+  </section>
+
+  <!-- ── CTA ────────────────────────────────────────────────────────────────── -->
+  <section class="cta-section">
+    <div class="container">
+      <p class="section-label reveal">Open Source</p>
+      <h2 class="cta-title reveal reveal-delay-1">
+        Built in public.<br />
+        <em style="font-style:italic; color:var(--gold-light);">Explore the code.</em>
+      </h2>
+      <p class="cta-subtitle reveal reveal-delay-2">
+        Full architecture documentation, infrastructure-as-code, and implementation plan available on GitHub. Production-grade from day one.
+      </p>
+      <div class="cta-actions reveal reveal-delay-3">
+        <a href="https://github.com" target="_blank" rel="noopener" class="btn-primary">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          GitHub Repository
+        </a>
+        <a href="#top" class="btn-secondary">Back to top ↑</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Footer ─────────────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <span class="nav-wordmark">Duseum</span>
+        <p class="footer-tagline">A serverless, cloud-native digital museum platform built for artists and collectors.</p>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-links-label">Platform</div>
+        <a href="#about">About</a>
+        <a href="#features">Features</a>
+        <a href="#tiers">Access Tiers</a>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-links-label">Technical</div>
+        <a href="#tech">Tech Stack</a>
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://duseum.com" target="_blank" rel="noopener">duseum.com</a>
+      </div>
+
+      <div class="footer-links-group">
+        <div class="footer-links-label">Built with</div>
+        <a href="https://aws.amazon.com/serverless/" target="_blank" rel="noopener">AWS Serverless</a>
+        <a href="https://stripe.com" target="_blank" rel="noopener">Stripe Payments</a>
+        <a href="https://react.dev" target="_blank" rel="noopener">React 18</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2025 Duseum — Digital Museum Platform</span>
+      <div class="footer-status">
+        <div class="status-dot"></div>
+        <span>In development · v1.2</span>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // ── Scroll reveal
+    const revealEls = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => io.observe(el));
+
+    // ── Nav compact on scroll
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      nav.style.padding = window.scrollY > 60 ? '0.75rem 2.5rem' : '1.25rem 2.5rem';
+    }, { passive: true });
+  </script>
+</body>
+</html>
