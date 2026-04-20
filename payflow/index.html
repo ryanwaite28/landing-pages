@@ -1,0 +1,1362 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PayFlow — Invoice clients. Pay your team. Keep your cut.</title>
+    <meta
+      name="description"
+      content="The first invoicing platform built for freelancers who work with subcontractors. Auto-split payments, milestone billing, real profit tracking."
+    />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- GSAP for scroll animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+      *,
+      *::before,
+      *::after {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      :root {
+        --bg-primary: #0a0a0b;
+        --bg-secondary: #111113;
+        --bg-card: #18181b;
+        --bg-card-hover: #1f1f23;
+        --border: #27272a;
+        --border-light: #3f3f46;
+        --text-primary: #fafafa;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent: #22c55e;
+        --accent-dim: #166534;
+        --accent-glow: rgba(34, 197, 94, 0.15);
+        --red: #ef4444;
+        --amber: #f59e0b;
+        --blue: #3b82f6;
+        --font-display: "DM Serif Display", serif;
+        --font-body: "Outfit", sans-serif;
+        --font-mono: "JetBrains Mono", monospace;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        font-size: 16px;
+      }
+      body {
+        font-family: var(--font-body);
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        line-height: 1.6;
+        overflow-x: hidden;
+        -webkit-font-smoothing: antialiased;
+      }
+
+      ::selection {
+        background: var(--accent);
+        color: var(--bg-primary);
+      }
+
+      /* ── NAV ── */
+      nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 1.25rem 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(10, 10, 11, 0.8);
+        backdrop-filter: blur(20px);
+        border-bottom: 1px solid transparent;
+        transition: border-color 0.3s;
+      }
+      nav.scrolled {
+        border-bottom-color: var(--border);
+      }
+      .nav-logo {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        color: var(--text-primary);
+        text-decoration: none;
+        letter-spacing: -0.02em;
+      }
+      .nav-logo span {
+        color: var(--accent);
+      }
+      .nav-cta {
+        font-family: var(--font-body);
+        font-size: 0.875rem;
+        font-weight: 500;
+        padding: 0.625rem 1.5rem;
+        background: var(--accent);
+        color: var(--bg-primary);
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        text-decoration: none;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
+      }
+      .nav-cta:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 24px var(--accent-glow);
+      }
+
+      /* ── SECTION LAYOUT ── */
+      section {
+        padding: 6rem 2rem;
+      }
+      .container {
+        max-width: 1120px;
+        margin: 0 auto;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding-top: 5rem;
+        position: relative;
+      }
+      .hero::before {
+        content: "";
+        position: absolute;
+        top: -200px;
+        right: -300px;
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(
+          circle,
+          var(--accent-glow) 0%,
+          transparent 70%
+        );
+        pointer-events: none;
+      }
+      .hero-content {
+        position: relative;
+        z-index: 1;
+      }
+      .hero-eyebrow {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: var(--accent);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .hero-eyebrow::before {
+        content: "";
+        width: 32px;
+        height: 1px;
+        background: var(--accent);
+      }
+      .hero h1 {
+        font-family: var(--font-display);
+        font-size: clamp(3rem, 7vw, 5.5rem);
+        line-height: 1.05;
+        letter-spacing: -0.03em;
+        margin-bottom: 1.75rem;
+        max-width: 800px;
+      }
+      .hero h1 em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .hero-sub {
+        font-size: 1.25rem;
+        font-weight: 300;
+        color: var(--text-secondary);
+        max-width: 560px;
+        line-height: 1.7;
+        margin-bottom: 2.5rem;
+      }
+      .hero-actions {
+        display: flex;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
+      .btn-primary {
+        font-family: var(--font-body);
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 0.875rem 2rem;
+        background: var(--accent);
+        color: var(--bg-primary);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px var(--accent-glow);
+      }
+      .btn-secondary {
+        font-family: var(--font-body);
+        font-size: 1rem;
+        font-weight: 500;
+        padding: 0.875rem 2rem;
+        background: transparent;
+        color: var(--text-secondary);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all 0.2s;
+      }
+      .btn-secondary:hover {
+        border-color: var(--text-muted);
+        color: var(--text-primary);
+      }
+
+      /* ── STATS BAR ── */
+      .stats-bar {
+        padding: 3rem 2rem;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        background: var(--bg-secondary);
+      }
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+        max-width: 900px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .stat-number {
+        font-family: var(--font-display);
+        font-size: 2.5rem;
+        color: var(--accent);
+        display: block;
+        margin-bottom: 0.25rem;
+      }
+      .stat-label {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+
+      /* ── PROBLEM ── */
+      .problem {
+        background: var(--bg-secondary);
+      }
+      .section-label {
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 1rem;
+      }
+      .section-title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 3.25rem);
+        line-height: 1.15;
+        letter-spacing: -0.02em;
+        margin-bottom: 2rem;
+        max-width: 700px;
+      }
+      .pain-points {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+        margin-top: 3rem;
+      }
+      .pain-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem;
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+      .pain-card:hover {
+        border-color: var(--border-light);
+        transform: translateY(-2px);
+      }
+      .pain-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+      }
+      .pain-icon.red {
+        background: rgba(239, 68, 68, 0.12);
+        color: var(--red);
+      }
+      .pain-icon.amber {
+        background: rgba(245, 158, 11, 0.12);
+        color: var(--amber);
+      }
+      .pain-icon.blue {
+        background: rgba(59, 130, 246, 0.12);
+        color: var(--blue);
+      }
+      .pain-icon.accent {
+        background: var(--accent-glow);
+        color: var(--accent);
+      }
+      .pain-card h3 {
+        font-family: var(--font-body);
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.75rem;
+      }
+      .pain-card p {
+        font-size: 0.925rem;
+        color: var(--text-secondary);
+        line-height: 1.65;
+      }
+
+      /* ── WHO ── */
+      .who-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+        align-items: start;
+        margin-top: 3rem;
+      }
+      .who-description p {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        line-height: 1.7;
+        margin-bottom: 1.5rem;
+      }
+      .persona-list {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+      .persona-list li {
+        padding: 1.25rem 1.5rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        font-size: 0.95rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        transition: border-color 0.3s;
+      }
+      .persona-list li:hover {
+        border-color: var(--accent-dim);
+      }
+      .persona-list li strong {
+        color: var(--text-primary);
+        font-weight: 600;
+      }
+
+      /* ── HOW IT WORKS ── */
+      .how {
+        background: var(--bg-secondary);
+      }
+      .steps {
+        margin-top: 3rem;
+        position: relative;
+      }
+      .steps::before {
+        content: "";
+        position: absolute;
+        left: 23px;
+        top: 0;
+        bottom: 0;
+        width: 1px;
+        background: linear-gradient(to bottom, var(--accent), var(--border));
+      }
+      .step {
+        display: flex;
+        gap: 2rem;
+        padding: 2rem 0;
+        position: relative;
+      }
+      .step-number {
+        width: 48px;
+        height: 48px;
+        background: var(--bg-primary);
+        border: 2px solid var(--accent);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: var(--accent);
+        flex-shrink: 0;
+        z-index: 1;
+      }
+      .step-content {
+        padding-top: 0.5rem;
+      }
+      .step-content h3 {
+        font-size: 1.15rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+      }
+      .step-content p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.65;
+        max-width: 520px;
+      }
+
+      /* ── COMPARISON ── */
+      .comparison-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 3rem;
+        font-size: 0.95rem;
+      }
+      .comparison-table th {
+        text-align: left;
+        padding: 1rem 1.5rem;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-muted);
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        border-bottom: 1px solid var(--border);
+      }
+      .comparison-table th:last-child {
+        color: var(--accent);
+      }
+      .comparison-table td {
+        padding: 1.125rem 1.5rem;
+        border-bottom: 1px solid var(--border);
+        color: var(--text-secondary);
+        vertical-align: top;
+      }
+      .comparison-table td:last-child {
+        color: var(--text-primary);
+        font-weight: 500;
+      }
+      .comparison-table tr:hover td {
+        background: var(--bg-card);
+      }
+
+      /* ── PRICING ── */
+      .pricing {
+        background: var(--bg-secondary);
+      }
+      .pricing-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 3rem;
+      }
+      .price-card {
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 2.5rem 2rem;
+        position: relative;
+        transition:
+          border-color 0.3s,
+          transform 0.3s;
+      }
+      .price-card:hover {
+        transform: translateY(-4px);
+      }
+      .price-card.featured {
+        border-color: var(--accent);
+        box-shadow: 0 0 60px var(--accent-glow);
+      }
+      .price-badge {
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--accent);
+        color: var(--bg-primary);
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        font-weight: 500;
+        padding: 0.3rem 1rem;
+        border-radius: 20px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      .price-tier {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 1rem;
+      }
+      .price-amount {
+        font-family: var(--font-display);
+        font-size: 3rem;
+        color: var(--text-primary);
+        line-height: 1;
+        margin-bottom: 0.25rem;
+      }
+      .price-amount span {
+        font-family: var(--font-body);
+        font-size: 1rem;
+        color: var(--text-muted);
+        font-weight: 400;
+      }
+      .price-desc {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border);
+      }
+      .price-features {
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .price-features li {
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: flex-start;
+        gap: 0.625rem;
+      }
+      .price-features li::before {
+        content: "✓";
+        color: var(--accent);
+        font-weight: 700;
+        flex-shrink: 0;
+        margin-top: 1px;
+      }
+
+      /* ── SURVEY ── */
+      .survey {
+        background: var(--bg-primary);
+        border-top: 1px solid var(--border);
+      }
+      .survey-wrapper {
+        max-width: 720px;
+        margin: 0 auto;
+      }
+      .survey-intro {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        line-height: 1.7;
+        margin-bottom: 3rem;
+        max-width: 600px;
+      }
+      .survey-question {
+        margin-bottom: 2.5rem;
+      }
+      .survey-question label {
+        display: block;
+        font-size: 1.05rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: var(--text-primary);
+      }
+      .survey-question label .q-num {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--accent);
+        margin-right: 0.5rem;
+      }
+      .radio-group {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+      }
+      .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.875rem 1.25rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        cursor: pointer;
+        transition:
+          border-color 0.2s,
+          background 0.2s;
+        font-size: 0.925rem;
+        color: var(--text-secondary);
+      }
+      .radio-option:hover {
+        border-color: var(--border-light);
+        background: var(--bg-card-hover);
+      }
+      .radio-option input[type="radio"] {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border: 2px solid var(--border-light);
+        border-radius: 50%;
+        flex-shrink: 0;
+        cursor: pointer;
+        position: relative;
+        transition: border-color 0.2s;
+      }
+      .radio-option input[type="radio"]:checked {
+        border-color: var(--accent);
+      }
+      .radio-option input[type="radio"]:checked::after {
+        content: "";
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .radio-option:has(input:checked) {
+        border-color: var(--accent-dim);
+        background: rgba(34, 197, 94, 0.05);
+        color: var(--text-primary);
+      }
+      textarea {
+        width: 100%;
+        min-height: 100px;
+        padding: 1rem 1.25rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.925rem;
+        resize: vertical;
+        transition: border-color 0.2s;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      textarea::placeholder {
+        color: var(--text-muted);
+      }
+
+      .submit-row {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-top: 2rem;
+      }
+      .submit-btn {
+        font-family: var(--font-body);
+        font-size: 1rem;
+        font-weight: 600;
+        padding: 1rem 2.5rem;
+        background: var(--accent);
+        color: var(--bg-primary);
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 32px var(--accent-glow);
+      }
+      .submit-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+      .submit-status {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+      }
+      .submit-status.success {
+        color: var(--accent);
+      }
+
+      /* ── WAITLIST ── */
+      .waitlist {
+        background: var(--bg-secondary);
+        text-align: center;
+        border-top: 1px solid var(--border);
+      }
+      .waitlist .section-title {
+        margin-left: auto;
+        margin-right: auto;
+      }
+      .waitlist-subtitle {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        max-width: 500px;
+        margin: 0 auto 2.5rem;
+        line-height: 1.7;
+      }
+      .email-form {
+        display: flex;
+        gap: 0.75rem;
+        max-width: 480px;
+        margin: 0 auto;
+      }
+      .email-input {
+        flex: 1;
+        padding: 0.875rem 1.25rem;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        color: var(--text-primary);
+        font-family: var(--font-body);
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+      }
+      .email-input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .email-input::placeholder {
+        color: var(--text-muted);
+      }
+      .email-form .btn-primary {
+        white-space: nowrap;
+      }
+      .waitlist-note {
+        font-size: 0.8rem;
+        color: var(--text-muted);
+        margin-top: 1rem;
+      }
+
+      /* ── FOOTER ── */
+      footer {
+        padding: 3rem 2rem;
+        border-top: 1px solid var(--border);
+        text-align: center;
+      }
+      footer p {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+      }
+      footer a {
+        color: var(--text-secondary);
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      footer a:hover {
+        color: var(--accent);
+      }
+
+      /* ── SCROLL ANIMATIONS ── */
+      .reveal {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        section {
+          padding: 4rem 1.25rem;
+        }
+        .pain-points {
+          grid-template-columns: 1fr;
+        }
+        .who-grid {
+          grid-template-columns: 1fr;
+          gap: 2rem;
+        }
+        .pricing-grid {
+          grid-template-columns: 1fr;
+          max-width: 400px;
+          margin-left: auto;
+          margin-right: auto;
+        }
+        .stats-grid {
+          grid-template-columns: 1fr;
+          gap: 1.5rem;
+        }
+        .comparison-table {
+          font-size: 0.85rem;
+        }
+        .comparison-table th,
+        .comparison-table td {
+          padding: 0.875rem 1rem;
+        }
+        .email-form {
+          flex-direction: column;
+        }
+        .hero h1 {
+          font-size: clamp(2.25rem, 8vw, 3.5rem);
+        }
+        .steps::before {
+          left: 22px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── NAV ── -->
+    <nav id="nav">
+      <a href="#" class="nav-logo">Pay<span>Flow</span></a>
+      <a href="#waitlist" class="nav-cta">Get Early Access</a>
+    </nav>
+
+    <!-- ── HERO ── -->
+    <section class="hero">
+      <div class="container hero-content">
+        <div class="hero-eyebrow">
+          Validation Stage — Seeking Early Feedback
+        </div>
+        <h1>
+          Invoice clients.<br />Pay your team.<br />Keep your <em>cut</em>.
+        </h1>
+        <p class="hero-sub">
+          The first invoicing platform built for freelancers who work with
+          subcontractors. One dashboard for money in, money out, and real
+          profit.
+        </p>
+        <div class="hero-actions">
+          <a href="#survey" class="btn-primary">Share Your Feedback ↓</a>
+          <a href="#how" class="btn-secondary">See How It Works</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STATS ── -->
+    <div class="stats-bar">
+      <div class="stats-grid">
+        <div class="reveal">
+          <span class="stat-number">1.57B</span>
+          <span class="stat-label">Freelancers worldwide</span>
+        </div>
+        <div class="reveal">
+          <span class="stat-number">71%</span>
+          <span class="stat-label">Experience late payments</span>
+        </div>
+        <div class="reveal">
+          <span class="stat-number">$446M</span>
+          <span class="stat-label">Invoicing software market</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── PROBLEM ── -->
+    <section class="problem" id="problem">
+      <div class="container">
+        <div class="section-label reveal">The Problem</div>
+        <h2 class="section-title reveal">
+          Freelancing has a growth ceiling<br />nobody talks about.
+        </h2>
+        <p
+          class="reveal"
+          style="
+            color: var(--text-secondary);
+            font-size: 1.05rem;
+            max-width: 640px;
+            line-height: 1.7;
+          "
+        >
+          You outgrew solo work. You bring on subcontractors. And suddenly your
+          invoicing workflow — built for one person — completely breaks down.
+        </p>
+
+        <div class="pain-points">
+          <div class="pain-card reveal">
+            <div class="pain-icon red">⇄</div>
+            <h3>Two-way invoicing chaos</h3>
+            <p>
+              You send invoices to clients and receive invoices from subs. No
+              tool handles both. So you're in FreshBooks, Venmo, and a
+              spreadsheet — all at once.
+            </p>
+          </div>
+          <div class="pain-card reveal">
+            <div class="pain-icon amber">◎</div>
+            <h3>No idea what you actually make</h3>
+            <p>
+              Client paid $10K. Subs cost $6,500. Stripe took a cut. Did you
+              profit $3,200 or $2,800? You won't know without an hour of
+              reconciling.
+            </p>
+          </div>
+          <div class="pain-card reveal">
+            <div class="pain-icon blue">⏱</div>
+            <h3>Manual payment splitting</h3>
+            <p>
+              Client pays Tuesday. You remember to pay your designer Thursday.
+              Your developer gets paid next week because you forgot. They're
+              frustrated. You feel guilty.
+            </p>
+          </div>
+          <div class="pain-card reveal">
+            <div class="pain-icon accent">%</div>
+            <h3>Platform fees bleeding you dry</h3>
+            <p>
+              Upwork takes 10–15%. Fiverr takes 20%. You left platforms for
+              direct clients — but traded fees for operational chaos with zero
+              infrastructure.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WHO IS THIS FOR ── -->
+    <section id="who">
+      <div class="container">
+        <div class="section-label reveal">Who This Is For</div>
+        <h2 class="section-title reveal">
+          The freelancer in the<br />messy middle.
+        </h2>
+
+        <div class="who-grid">
+          <div class="who-description reveal">
+            <p>
+              This isn't for solo freelancers — they're well-served by Wave,
+              FreshBooks, and a dozen others.
+            </p>
+            <p>
+              This is for the freelancer who's grown beyond solo work but isn't
+              an agency. One person selling the work, managing the client, and
+              coordinating a small team — with zero financial infrastructure for
+              the payment side.
+            </p>
+          </div>
+          <ul class="persona-list reveal">
+            <li>
+              <strong>Freelance developer</strong> who lands a $15K project and
+              brings on a designer and frontend dev
+            </li>
+            <li>
+              <strong>Marketing consultant</strong> managing 3–5 specialists
+              across client accounts
+            </li>
+            <li>
+              <strong>Creative director</strong> subcontracting illustration,
+              motion, and photography
+            </li>
+            <li>
+              <strong>Technical project lead</strong> who scopes, sells, and
+              coordinates 2–4 contractors
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ── -->
+    <section class="how" id="how">
+      <div class="container">
+        <div class="section-label reveal">How It Works</div>
+        <h2 class="section-title reveal">Five steps. Zero spreadsheets.</h2>
+
+        <div class="steps">
+          <div class="step reveal">
+            <div class="step-number">01</div>
+            <div class="step-content">
+              <h3>Create a project & define milestones</h3>
+              <p>
+                Break your client engagement into billable phases. "Phase 1:
+                Wireframes — $3,000. Phase 2: Development — $7,000."
+              </p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">02</div>
+            <div class="step-content">
+              <h3>Assign subcontractors with rates</h3>
+              <p>
+                "Designer gets $1,200 for Phase 1. Developer gets $4,000 for
+                Phase 2." PayFlow tracks who gets what.
+              </p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">03</div>
+            <div class="step-content">
+              <h3>Invoice your client per milestone</h3>
+              <p>
+                Generate a professional invoice with a Stripe payment link. Send
+                it. Track when they open and view it.
+              </p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">04</div>
+            <div class="step-content">
+              <h3>Client pays → subs get paid automatically</h3>
+              <p>
+                When the payment hits, PayFlow splits it. Your designer's $1,200
+                goes to their account. Your $1,800 stays in yours. No manual
+                transfers.
+              </p>
+            </div>
+          </div>
+          <div class="step reveal">
+            <div class="step-number">05</div>
+            <div class="step-content">
+              <h3>See your real profit</h3>
+              <p>
+                Not revenue. Profit. Per project, per milestone, per month.
+                "Project Acme: $10K revenue, $6.5K sub costs, $3.5K net."
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── COMPARISON ── -->
+    <section id="comparison">
+      <div class="container">
+        <div class="section-label reveal">Why PayFlow</div>
+        <h2 class="section-title reveal">Built for how you actually work.</h2>
+
+        <table class="comparison-table reveal">
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Existing Tools</th>
+              <th>PayFlow</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Payment direction</td>
+              <td>Invoice clients OR pay people — not both</td>
+              <td>Invoices out AND payouts in, one system</td>
+            </tr>
+            <tr>
+              <td>Financial visibility</td>
+              <td>Revenue tracking only</td>
+              <td>Per-project P&L (revenue minus sub costs)</td>
+            </tr>
+            <tr>
+              <td>Payment splitting</td>
+              <td>Manual via Venmo / Zelle / bank transfer</td>
+              <td>Automatic splits via Stripe Connect</td>
+            </tr>
+            <tr>
+              <td>Milestone billing</td>
+              <td>Afterthought or unsupported</td>
+              <td>Milestones are the core billing unit</td>
+            </tr>
+            <tr>
+              <td>Target user</td>
+              <td>Solo freelancers or large agencies</td>
+              <td>The 1–5 subcontractor range</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ── PRICING ── -->
+    <section class="pricing" id="pricing">
+      <div class="container">
+        <div class="section-label reveal" style="text-align: center">
+          Pricing
+        </div>
+        <h2
+          class="section-title reveal"
+          style="text-align: center; margin-left: auto; margin-right: auto"
+        >
+          Simple pricing that scales with you.
+        </h2>
+
+        <div class="pricing-grid">
+          <div class="price-card reveal">
+            <div class="price-tier">Free</div>
+            <div class="price-amount">$0</div>
+            <div class="price-desc">Get started, no commitment</div>
+            <ul class="price-features">
+              <li>3 active projects</li>
+              <li>1 subcontractor</li>
+              <li>Invoice generation & PDF export</li>
+              <li>Stripe payment links</li>
+              <li>2% platform fee on payouts</li>
+            </ul>
+          </div>
+          <div class="price-card featured reveal">
+            <div class="price-badge">Most Popular</div>
+            <div class="price-tier">Pro</div>
+            <div class="price-amount">$19 <span>/mo</span></div>
+            <div class="price-desc">For growing freelance operations</div>
+            <ul class="price-features">
+              <li>Unlimited projects & subs</li>
+              <li>0% platform fee on payouts</li>
+              <li>Recurring invoices</li>
+              <li>Tax-ready export reports</li>
+              <li>Priority support</li>
+            </ul>
+          </div>
+          <div class="price-card reveal">
+            <div class="price-tier">Lifetime</div>
+            <div class="price-amount">$149</div>
+            <div class="price-desc">Early adopter deal — limited time</div>
+            <ul class="price-features">
+              <li>Everything in Pro, forever</li>
+              <li>No recurring payments</li>
+              <li>All future features included</li>
+              <li>Founding member status</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SURVEY ── -->
+    <section class="survey" id="survey">
+      <div class="container">
+        <div class="survey-wrapper">
+          <div class="section-label reveal">Validate With Us</div>
+          <h2 class="section-title reveal">We need your honest signal.</h2>
+          <p class="survey-intro reveal">
+            PayFlow is in the planning phase. Before we build, we want to hear
+            from people who actually live this problem. Three questions, sixty
+            seconds.
+          </p>
+
+          <form id="surveyForm" onsubmit="return false;">
+            <div class="survey-question reveal">
+              <label
+                ><span class="q-num">01</span> How do you currently pay your
+                subcontractors?</label
+              >
+              <div class="radio-group">
+                <label class="radio-option"
+                  ><input type="radio" name="q1" value="venmo-paypal" /> Venmo /
+                  PayPal / Zelle</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q1" value="bank-transfer" /> Direct
+                  bank transfer</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q1" value="invoicing-tool" />
+                  Through my invoicing tool</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q1" value="spreadsheet" />
+                  Spreadsheet + manual payments</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q1" value="other" /> Other</label
+                >
+              </div>
+            </div>
+
+            <div class="survey-question reveal">
+              <label
+                ><span class="q-num">02</span> What's your biggest pain
+                point?</label
+              >
+              <div class="radio-group">
+                <label class="radio-option"
+                  ><input type="radio" name="q2" value="tracking" /> Tracking
+                  who's been paid and who hasn't</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q2" value="profit" /> Knowing my
+                  real profit per project</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q2" value="splitting" /> Splitting
+                  payments on time</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q2" value="tax" /> Reconciling
+                  everything at tax time</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q2" value="other" /> Something
+                  else</label
+                >
+              </div>
+            </div>
+
+            <div class="survey-question reveal">
+              <label
+                ><span class="q-num">03</span> Would you use a tool like
+                PayFlow?</label
+              >
+              <div class="radio-group">
+                <label class="radio-option"
+                  ><input type="radio" name="q3" value="yes" /> Yes — I need
+                  this yesterday</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q3" value="maybe" /> Maybe —
+                  depends on execution</label
+                >
+                <label class="radio-option"
+                  ><input type="radio" name="q3" value="no" /> No — my current
+                  setup works fine</label
+                >
+              </div>
+            </div>
+
+            <div class="survey-question reveal">
+              <label
+                ><span class="q-num">+</span> Anything else you'd want to tell
+                us?
+                <span style="color: var(--text-muted); font-weight: 400"
+                  >(optional)</span
+                ></label
+              >
+              <textarea
+                name="comments"
+                placeholder="What would make this a must-have for you?"
+              ></textarea>
+            </div>
+
+            <div class="submit-row reveal">
+              <button
+                type="button"
+                class="submit-btn"
+                id="submitBtn"
+                onclick="submitSurvey()"
+              >
+                Submit Feedback
+              </button>
+              <span class="submit-status" id="submitStatus"></span>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WAITLIST ── -->
+    <section class="waitlist" id="waitlist">
+      <div class="container">
+        <div class="section-label reveal">Early Access</div>
+        <h2 class="section-title reveal">Be first in line.</h2>
+        <p class="waitlist-subtitle reveal">
+          Join the waitlist to get early access and lock in the Lifetime deal
+          ($149) before it's gone.
+        </p>
+        <div class="email-form reveal" id="waitlistForm">
+          <input
+            type="email"
+            class="email-input"
+            id="waitlistEmail"
+            placeholder="you@example.com"
+            required
+          />
+          <button class="btn-primary" onclick="submitWaitlist()">
+            Join Waitlist
+          </button>
+        </div>
+        <p class="waitlist-note reveal" id="waitlistNote">
+          No spam. Just a heads-up when we launch.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer>
+      <p>
+        PayFlow is being built by a developer who lived this problem.<br />
+        Questions? <a href="mailto:hello@payflow.app">hello@payflow.app</a>
+      </p>
+    </footer>
+
+    <script>
+      // ── NAV SCROLL ──
+      window.addEventListener("scroll", () => {
+        document
+          .getElementById("nav")
+          .classList.toggle("scrolled", window.scrollY > 50);
+      });
+
+      // ── GSAP SCROLL ANIMATIONS ──
+      gsap.registerPlugin(ScrollTrigger);
+      gsap.utils.toArray(".reveal").forEach((el, i) => {
+        gsap.to(el, {
+          opacity: 1,
+          y: 0,
+          duration: 0.7,
+          ease: "power3.out",
+          scrollTrigger: {
+            trigger: el,
+            start: "top 88%",
+            toggleActions: "play none none none",
+          },
+          delay: (i % 4) * 0.08,
+        });
+      });
+
+      // ── SURVEY SUBMIT ──
+      function submitSurvey() {
+        const form = document.getElementById("surveyForm");
+        const q1 = form.querySelector('input[name="q1"]:checked');
+        const q2 = form.querySelector('input[name="q2"]:checked');
+        const q3 = form.querySelector('input[name="q3"]:checked');
+        const status = document.getElementById("submitStatus");
+        const btn = document.getElementById("submitBtn");
+
+        if (!q1 || !q2 || !q3) {
+          status.textContent = "Please answer all three questions.";
+          status.className = "submit-status";
+          return;
+        }
+
+        // In production, replace this with a fetch() to your backend, Formspree, Tally, etc.
+        const data = {
+          q1: q1.value,
+          q2: q2.value,
+          q3: q3.value,
+          comments: form.querySelector("textarea").value,
+          timestamp: new Date().toISOString(),
+        };
+        console.log("Survey submission:", data);
+
+        btn.disabled = true;
+        btn.textContent = "Submitted ✓";
+        status.textContent = "Thank you — your feedback shapes what we build.";
+        status.className = "submit-status success";
+      }
+
+      // ── WAITLIST SUBMIT ──
+      function submitWaitlist() {
+        const email = document.getElementById("waitlistEmail").value;
+        const note = document.getElementById("waitlistNote");
+        if (!email || !email.includes("@")) {
+          note.textContent = "Please enter a valid email.";
+          return;
+        }
+
+        // In production, replace with a fetch() to your email collection endpoint
+        console.log("Waitlist signup:", email);
+
+        document.getElementById("waitlistForm").innerHTML =
+          "<p style=\"color: var(--accent); font-size: 1.1rem; font-weight: 500;\">You're on the list. We'll be in touch.</p>";
+        note.textContent = "";
+      }
+    </script>
+  </body>
+</html>
