@@ -1139,7 +1139,7 @@
             seconds.
           </p>
 
-          <form id="surveyForm" onsubmit="return false;">
+          <form action="https://formspree.io/f/xdaylgpk" method="POST">
             <div class="survey-question reveal">
               <label
                 ><span class="q-num">01</span> How do you currently pay your
@@ -1232,6 +1232,32 @@
               ></textarea>
             </div>
 
+            <div class="survey-question reveal">
+              <label
+                ><span class="q-num">+</span> Your name?
+                <span style="color: var(--text-muted); font-weight: 400"
+                  >(optional)</span
+                ></label
+              >
+              <input
+                name="name"
+                placeholder=""
+              />
+            </div>
+
+            <div class="survey-question reveal">
+              <label
+                ><span class="q-num">+</span> Your email?
+                <span style="color: var(--text-muted); font-weight: 400"
+                  >(optional)</span
+                ></label
+              >
+              <input
+                name="email"
+                placeholder=""
+              />
+            </div>
+
             <div class="submit-row reveal">
               <button
                 type="button"
@@ -1256,7 +1282,7 @@
         <p class="waitlist-subtitle reveal">
           Join the waitlist to get early access and lock in the promo deal before it's gone.
         </p>
-        <div class="email-form reveal" id="waitlistForm">
+        <form action="https://formspree.io/f/mgorlkdp" method="POST">
           <input
             type="email"
             class="email-input"
@@ -1264,10 +1290,10 @@
             placeholder="you@example.com"
             required
           />
-          <button class="btn-primary" onclick="submitWaitlist()">
+          <button class="btn-primary" type="submit">
             Join Waitlist
           </button>
-        </div>
+        </form>
         <p class="waitlist-note reveal" id="waitlistNote">
           No spam. Just a heads-up when we launch.
         </p>
@@ -1278,11 +1304,16 @@
     <footer>
       <p>
         PayFlow is being built by a developer who lived this problem.<br />
-        Questions? <a href="mailto:hello@payflow.app">hello@payflow.app</a>
+        Questions? <a href="ryanmyronwaite.llc@gmail.com">ryanmyronwaite.llc@gmail.com</a>
       </p>
     </footer>
 
+    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
     <script>
+        window.formspree = window.formspree || function () {
+            (formspree.q = formspree.q || []).push(arguments);
+        };
+
       // ── NAV SCROLL ──
       window.addEventListener("scroll", () => {
         document
@@ -1340,6 +1371,8 @@
 
       // ── WAITLIST SUBMIT ──
       function submitWaitlist() {
+        document.getElementById("waitlistForm").innerHTML = "";
+
         const email = document.getElementById("waitlistEmail").value;
         const note = document.getElementById("waitlistNote");
         if (!email || !email.includes("@")) {
@@ -1348,11 +1381,20 @@
         }
 
         // In production, replace with a fetch() to your email collection endpoint
-        console.log("Waitlist signup:", email);
+        // console.log("Waitlist signup:", email);
+        formspree("initForm", {
+            formElement: "#my-form",
+            formId: "mgorlkdp",
+        })
+        .then(() => {
+            document.getElementById("waitlistForm").innerHTML =
+            "<p style=\"color: var(--accent); font-size: 1.1rem; font-weight: 500;\">You're on the list. We'll be in touch.</p>";
+            note.textContent = "";
+        })
+        .catch(() => {
+            note.textContent = "Error submission, please try again";
+        })
 
-        document.getElementById("waitlistForm").innerHTML =
-          "<p style=\"color: var(--accent); font-size: 1.1rem; font-weight: 500;\">You're on the list. We'll be in touch.</p>";
-        note.textContent = "";
       }
     </script>
   </body>
